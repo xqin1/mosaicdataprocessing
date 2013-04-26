@@ -70,15 +70,15 @@ def main():
 										sqlComm ="insert into " + tableName + " select b.entity,b.protocol,a.geoid10, " + \
 												 "CASE " + \
 												 "WHEN ST_WITHIN(a.geom, b.geom) THEN 1 " + \
-												 "ELSE st_area(st_intersection(st_intersection(st_envelope(a.geom),b.geom),a.geom))/st_area(a.geom) " + \
+												 "ELSE st_area(st_intersection(a.geom,b.geom))/st_area(a.geom) " + \
 												 "END " + \
 												 "from census.block2010_" + s[0] + " a, " + sourceTableName + " b " + \
-												 "where b.entity='" + company + "' and a.countyfp10='" + c[0] + "' and st_intersects(st_envelope(a.geom),b.geom)"
+												 "where b.entity='" + company + "' and a.countyfp10='" + c[0] + "' and st_intersects(a.geom,b.geom)"
 										cursor.execute(sqlComm)
 										conn.commit()
 										print "process " + company + " for state " + s[0] + " county " + c[0] + " takes " + str(int((time.time()-starttimeCounty)/60)) + " minutes"
 									print "process " + company + " for state " + s[0] + " takes " + str(int((time.time()-starttimeState)/60))+ " minutes"	
-								print "process " + company + " takes " + str(int((time.time()-starttimeCompany)/60))+ " minutes"				
+								print "process " + company + " takes " + str(int((time.time()-starttimeCompany)/60))+ " minutes"					
 		print "Whole Process taken in " + str(int((time.time()-starttime)/60)) + " minutes"
 	except psycopg2.DatabaseError, e: 
 		if conn:

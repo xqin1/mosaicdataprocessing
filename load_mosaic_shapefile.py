@@ -107,9 +107,14 @@ def main():
 										# 					"where st_intersects(geomext.geom,grid.grid_geom) and st_geometrytype(st_intersection(geomext.geom,grid.grid_geom)) like '%Polygon'"
 										sqlComm = sqlComm + "select st_multi(st_intersection(geomext.geom,grid.grid_geom)) as geom into swat.mytemp " + \
 															"from geomext,grid " + \
-															"where st_intersects(geomext.geom,grid.grid_geom) and st_geometrytype(st_intersection(geomext.geom,grid.grid_geom)) like '%Polygon';"
-										sqlComm = sqlComm + "insert into " + tempTableName +" (geom) select geom from swat.mytemp;"
+															"where st_intersects(geomext.geom,grid.grid_geom);"
+										#resulting geometires could be GeometryCollection, we need to convert it multipolygon
+										sqlComm = sqlComm + "insert into " + tempTableName +" (geom) select CASE WHEN st_geometrytype(geom) like '%Polygon' Then geom else st_buffer(geom,0.0) end from swat.mytemp;"
 										sqlComm = sqlComm + "drop table if exists swat.mytemp;"
+										cursor.execute(sqlComm)
+										conn.commit()
+
+										sqlComm = "delete from " + tempTableName + " where gid = " + str(gid[0])
 										cursor.execute(sqlComm)
 										conn.commit()
 

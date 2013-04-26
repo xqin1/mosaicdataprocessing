@@ -34,6 +34,7 @@
     + use *st_buffer(geom, 0.0)* to repair geometry, the *makeValid* (from postgis 2.0) won't work due to large geometry
     + create 4x4 tiles based on geometry extend, cut the geometry until the number of vertices below preset threshhold (5000 in this case)
     + in each iteration, insert the tiled geometry into the temporary table and delete the old record.
+    + in case st_intersection() returns GeometryCollection type, use st_buffer() to convert it to multipolygon
     + move all records from the temporary table to the partisioned coverage boundary table and drop the temporary table
 + run *process_mosaic_block_overlay.py* to process the coverage boundary overlay with census block table
     + again, outer loop is for folder struction to find company/technology used to locate right table
